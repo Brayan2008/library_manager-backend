@@ -22,8 +22,8 @@ public class Tema {
     @Column(name = "NOMBRE_TEMA")
     String nombre_tema;
 
-    @ManyToMany(mappedBy = "tema")
-    List<Libro> libros = new ArrayList<>();
+    @ManyToMany(mappedBy = "lista_tema")
+    List<Libro> lista_libros = new ArrayList<>();
 
 
 

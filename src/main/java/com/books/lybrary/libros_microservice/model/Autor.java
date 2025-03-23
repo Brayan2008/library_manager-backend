@@ -20,15 +20,15 @@ public class Autor {
 
     @Id
     @Column(name = "COD_AUTOR")
-    int cod_autor;
+    private int cod_autor;
     @Column(name = "NOMBRE_AUTOR")
-    String nombre_autor;
+    private String nombre_autor;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_NATION_FK")
-    Nation nation_id; //Como foraneo
+    private Nation nation_id; //Como foraneo
 
     @ManyToMany(mappedBy = "lista_autores")
-    List<Libro> lista_libros_autor = new ArrayList<>();
+    private List<Libro> lista_libros_autor = new ArrayList<>();
 
 }

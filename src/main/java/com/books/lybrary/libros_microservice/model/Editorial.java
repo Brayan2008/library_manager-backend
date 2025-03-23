@@ -3,6 +3,8 @@ package com.books.lybrary.libros_microservice.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,12 +20,12 @@ public class Editorial {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID_EDITORIAL")
-    long id_editorial;
+    private long id_editorial;
 
     @Column(name = "NOMBRE_EDITORIAL")
-    String nombre_editorial;
+    private String nombre_editorial;
 
-    @OneToMany(mappedBy = "editorial_id")
-    List<Libro> lista_Libros = new ArrayList<>();
+    @OneToMany(mappedBy = "editorial_id")    
+    private List<Libro> lista_Libros = new ArrayList<>();
 }
     
