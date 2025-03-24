@@ -12,9 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
 
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class Libro {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_EDITORIAL_FK")
     private Editorial editorial_id;
-
+    
     @ManyToMany
     @JoinTable(name = "AUTORxLIBRO",
             joinColumns = @JoinColumn(name = "ID_LIBRO_FK"),

@@ -2,12 +2,14 @@ package com.books.lybrary.libros_microservice.services;
 
 import java.util.List;
 
+import com.books.lybrary.libros_microservice.dto.LibroRequest;
+import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Libro;
 
 public interface LibroService {
-    public List<Libro> getLibros();
-    public Libro getLibroById(int id);
-    public Libro saveLibro(Libro libro);
+    public List<LibroResponse> getLibros();
+    public LibroResponse getLibroById(int id);
+    public Libro saveLibro(LibroRequest libro);
     public Libro updateLibro(Libro libro);
     public void deleteLibro(int id);
 }
