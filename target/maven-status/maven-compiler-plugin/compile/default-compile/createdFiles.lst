@@ -1,0 +1,17 @@
+com\books\lybrary\libros_microservice\dto\AutorResponse.class
+com\books\lybrary\libros_microservice\model\Editorial.class
+com\books\lybrary\libros_microservice\model\Libro.class
+com\books\lybrary\libros_microservice\model\Tema.class
+com\books\lybrary\libros_microservice\model\Autor.class
+com\books\lybrary\libros_microservice\controllers\BooksController.class
+com\books\lybrary\libros_microservice\dto\LibroRequest.class
+com\books\lybrary\libros_microservice\dto\AutorRequest.class
+com\books\lybrary\libros_microservice\dto\LibroResponse.class
+com\books\lybrary\libros_microservice\services\LibroService.class
+com\books\lybrary\libros_microservice\repository\AutorRepositorio.class
+com\books\lybrary\libros_microservice\repository\EditorialRepositorio.class
+com\books\lybrary\libros_microservice\services\AutorService.class
+com\books\lybrary\libros_microservice\services\LibroServiceImpl.class
+com\books\lybrary\libros_microservice\repository\LibroRepositorio.class
+com\books\lybrary\libros_microservice\model\Nation.class
+com\books\lybrary\libros_microservice\LibrosMicroserviceApplication.class

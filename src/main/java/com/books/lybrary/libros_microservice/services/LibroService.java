@@ -10,6 +10,6 @@ public interface LibroService {
     public List<LibroResponse> getLibros();
     public LibroResponse getLibroById(int id);
     public Libro saveLibro(LibroRequest libro);
-    public Libro updateLibro(Libro libro);
+    public Libro updateLibro(LibroRequest libro);
     public void deleteLibro(int id);
 }

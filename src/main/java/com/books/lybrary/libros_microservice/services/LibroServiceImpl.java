@@ -9,13 +9,18 @@ import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Editorial;
 import com.books.lybrary.libros_microservice.model.Libro;
+import com.books.lybrary.libros_microservice.repository.AutorRepositorio;
 import com.books.lybrary.libros_microservice.repository.LibroRepositorio;
 
+import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
+
 @Service
-public class LibroServiceImpl implements LibroService {
+public class LibroServiceImpl implements LibroService{
     
     @Autowired
     private LibroRepositorio libro_acces;
+    @Autowired
+    private EditorialRepositorio editorial_acces;
 
     @Override
     public List<LibroResponse> getLibros() {
@@ -48,30 +53,38 @@ public class LibroServiceImpl implements LibroService {
                     libro.getFecha_publicacion_libro(),
                     (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null);
     }
-
+    
     @Override
     public Libro saveLibro(LibroRequest libro) {
-        Libro post = new Libro();
+        //Primero creamos la editorial
         Editorial editorial = new Editorial();
-
-        post.setTitulo_libro(libro.nombre_libro());
-        post.setIsbn_libro(libro.isb());
-        post.setFecha_publicacion_libro(libro.fecha());
         editorial.setId_editorial(libro.id_editorial());
         editorial.setNombre_editorial(libro.nombre_editorial());
-        post.setEditorial_id(editorial);
+        System.out.println("Guardando la editorial: " + editorial.toString());
+        editorial_acces.save(editorial);//Guardamos la editorial
         
-        return libro_acces.save(post);
+        //Luego creamos el libro
+        Libro pre = new Libro();
+        pre.setId_libro(libro.codigo_libro());
+        pre.setTitulo_libro(libro.nombre_libro());
+        pre.setIsbn_libro(libro.isb());
+        pre.setFecha_publicacion_libro(libro.fecha());
+        //Lo relacionamos con la editorial
+        pre.setEditorial_id(editorial);
+        
+        return libro_acces.save(pre);//Lo guardamos
+    
     }
-
+    
     @Override
-    public Libro updateLibro(Libro libro) {
-        return libro_acces.save(libro);
+    public Libro updateLibro(LibroRequest libro) {
+        return null;
     }
 
     @Override
     public void deleteLibro(int id) {
         libro_acces.deleteById(id);
-    }
+    }       
 
+        
 }

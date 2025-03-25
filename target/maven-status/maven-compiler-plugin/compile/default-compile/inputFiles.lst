@@ -1,0 +1,17 @@
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\controllers\BooksController.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\dto\AutorRequest.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\dto\AutorResponse.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\dto\LibroRequest.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\dto\LibroResponse.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\LibrosMicroserviceApplication.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\model\Autor.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\model\Editorial.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\model\Libro.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\model\Nation.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\model\Tema.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\repository\AutorRepositorio.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\repository\EditorialRepositorio.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\repository\LibroRepositorio.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\services\AutorService.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\services\LibroService.java
+C:\Users\Lenovo\Desktop\Proyectos Personales\lybrary_manager-backend\libros_microservice\src\main\java\com\books\lybrary\libros_microservice\services\LibroServiceImpl.java

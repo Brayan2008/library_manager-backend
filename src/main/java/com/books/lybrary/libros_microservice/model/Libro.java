@@ -12,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +30,7 @@ public class Libro {
     @Column(name = "FECHA_PUBLICACION_LIBRO")
     private LocalDate fecha_publicacion_libro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_EDITORIAL_FK")
     private Editorial editorial_id;
     

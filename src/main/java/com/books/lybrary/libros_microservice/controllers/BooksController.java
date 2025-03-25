@@ -38,16 +38,14 @@ public class BooksController {
     }
 
     @PostMapping
-    public ResponseEntity<LibroResponse> postLibro(@RequestBody LibroRequest libro) {        
+    public ResponseEntity<LibroResponse> postLibro(@RequestBody LibroRequest libro){         
         libroservice.saveLibro(libro);
-
-        URI url = ServletUriComponentsBuilder.fromCurrentRequest().
+        URI url = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                 buildAndExpand(libro.codigo_libro()).
                 toUri();
         
-                return ResponseEntity.created(url).build();
+        return ResponseEntity.created(url).build();
     }
-
 
     }
     
