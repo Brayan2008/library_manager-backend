@@ -15,11 +15,11 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @Entity
 public class Libro {
+        
     @Id
     @Column(name = "ID_LIBRO")
     private int id_libro;
@@ -45,7 +45,5 @@ public class Libro {
             joinColumns = @JoinColumn(name = "ID_LIBRO_FK"), 
             inverseJoinColumns = @JoinColumn(name ="ID_TEMA_FX"))
     private List<Tema> lista_tema = new ArrayList<>();
-
-
 
 }

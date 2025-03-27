@@ -9,7 +9,6 @@ import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Editorial;
 import com.books.lybrary.libros_microservice.model.Libro;
-import com.books.lybrary.libros_microservice.repository.AutorRepositorio;
 import com.books.lybrary.libros_microservice.repository.LibroRepositorio;
 
 import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
@@ -78,13 +77,82 @@ public class LibroServiceImpl implements LibroService{
     
     @Override
     public Libro updateLibro(LibroRequest libro) {
-        return null;
+        if (!libro_acces.findById(libro.codigo_libro()).isPresent()) {
+            return null;
+        }
+
+        Libro pre = libro_acces.findById(libro.codigo_libro()).get();
+        pre.setTitulo_libro(libro.nombre_libro());
+        pre.setIsbn_libro(libro.isb());
+        pre.setFecha_publicacion_libro(libro.fecha());
+
+
+        //Ahora la editorial
+        var a = editorial_acces.findById(libro.id_editorial());
+        if (a.isPresent()) {
+            a.get().setNombre_editorial(libro.nombre_editorial());
+            editorial_acces.save(a.get());
+            return libro_acces.save(pre);
+        }
+
+        Editorial editorial = new Editorial();
+        editorial.setId_editorial(libro.id_editorial());
+        editorial.setNombre_editorial(libro.nombre_editorial());
+        editorial_acces.save(editorial);//Guardamos la editorial
+        
+        pre.setEditorial_id(editorial);
+        
+        return libro_acces.save(pre);//Lo guardamos
     }
 
-    @Override
-    public void deleteLibro(int id) {
-        libro_acces.deleteById(id);
-    }       
+    
 
+
+    @Override
+    public Libro patchLibro(LibroRequest libro) {
+        var a = libro_acces.findById(libro.codigo_libro());
+        //Si no existe el libro 
+        if (a.isEmpty()) {
+            return null;
+        }
+        //Obtiene el libro
+        Libro pre = a.get();
+        //Busca los campos que se quieren modificar
+        if (!libro.nombre_libro().isEmpty())  {
+            pre.setTitulo_libro(libro.nombre_libro());
+        }
+        if (!(libro.isb() == 0)) {
+            pre.setIsbn_libro(libro.isb());
+        }
+        if (!libro.fecha().toString().isEmpty()) {
+            pre.setFecha_publicacion_libro(libro.fecha());
+        }            
+            
+        //Busca la editorial
+        var b = editorial_acces.findById(libro.id_editorial());
+            //Si la editorial existe, se modifica
+            if (b.isPresent()) {
+                b.get().setNombre_editorial(libro.nombre_editorial());
+                editorial_acces.save(b.get());
+                pre.setEditorial_id(b.get());
+            }else{
+                Editorial editorial = new Editorial();
+                editorial.setId_editorial(libro.id_editorial());
+                editorial.setNombre_editorial(libro.nombre_editorial());
+                editorial_acces.save(editorial);//Guardamos la editorial
+                pre.setEditorial_id(editorial);
+            }
+        return libro_acces.save(pre);//Lo guardamos
+        }
+    
+
+    @Override
+    public boolean deleteLibro(int id) {
+        if (libro_acces.findById(id).isEmpty()) {
+            return false;
+        }
+        libro_acces.deleteById(id);
+        return true;
+    }       
         
 }

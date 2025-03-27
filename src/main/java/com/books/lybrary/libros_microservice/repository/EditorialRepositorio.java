@@ -7,5 +7,7 @@ import com.books.lybrary.libros_microservice.model.Editorial;
 
 @Repository
 public interface EditorialRepositorio extends JpaRepository<Editorial,Long> {
+
+    
     
 }

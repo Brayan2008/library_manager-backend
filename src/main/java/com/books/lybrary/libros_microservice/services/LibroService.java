@@ -11,5 +11,6 @@ public interface LibroService {
     public LibroResponse getLibroById(int id);
     public Libro saveLibro(LibroRequest libro);
     public Libro updateLibro(LibroRequest libro);
-    public void deleteLibro(int id);
+    public Libro patchLibro(LibroRequest libro);
+    public boolean deleteLibro(int id);
 }
