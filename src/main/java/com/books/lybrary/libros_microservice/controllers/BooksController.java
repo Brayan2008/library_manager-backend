@@ -38,14 +38,17 @@ public class BooksController {
         return ResponseEntity.ok(libroservice.getLibros());
     }
 
-    @GetMapping({"/find","/id"})
-    public ResponseEntity<LibroResponse> getBookbyID(@RequestParam @PathVariable int id) {
+    @GetMapping({"/find"})
+    public ResponseEntity<LibroResponse> getBookbyID(@RequestParam int id) {
         return libroservice.getLibroById(id) ==null ? ResponseEntity.notFound().build():ResponseEntity.ok(libroservice.getLibroById(id));
     }
 
     @PostMapping
     public ResponseEntity<LibroResponse> postLibro(@RequestBody LibroRequest libro){         
-        libroservice.saveLibro(libro);
+        if (libroservice.saveLibro(libro)==null) {
+            System.out.println("No hay nada");
+            return ResponseEntity.badRequest().build();
+        }
 
         URI url = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                 buildAndExpand(libro.codigo_libro()).
