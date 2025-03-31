@@ -19,27 +19,25 @@ public class EditorialServiceImpl implements EditorialService {
     @Override
     public List<EditorialResponse> getEditoriales() {
         if (editorialRepositorio.findAll().isEmpty()) {return null;}
-
         return editorialRepositorio.findAll().stream()
-                                    .map(ed -> new EditorialResponse(ed.getId_editorial(), ed.getNombre_editorial()))
+                                    .map(EditorialServiceImpl::convertirEditorial)
                                     .toList();
-    }
-
-
-    @Override
-    public EditorialResponse getEditorialById(long id) {
-        var editorial = editorialRepositorio.findById(id);
-        
-        if (editorial.isEmpty()) {return null;}
-
-        return new EditorialResponse(editorial.get().getId_editorial(),editorial.get().getNombre_editorial());
-
     }
 
     
     @Override
+    public EditorialResponse getEditorialById(long id) {
+        var editorial = editorialRepositorio.findById(id);
+        return editorial.isPresent() ? convertirEditorial(editorial.get()):null;
+
+    }
+
+    
+    
+    @Deprecated 
+    @Override
     public List<LibroResponse> getLibros(long id) {
-        return editorialRepositorio.findById(id).get()
+        return !editorialRepositorio.existsById(id) ? null:editorialRepositorio.findById(id).get()
                                                 .getLista_Libros()
                                                 .stream()
                                                 .map(lib->new LibroResponse(lib.getTitulo_libro(), 
@@ -52,19 +50,34 @@ public class EditorialServiceImpl implements EditorialService {
     
     @Override
     public Editorial saveEditorial(Editorial editorial) {
+        if (editorialRepositorio.existsById(editorial.getId_editorial())) {
+            return null;
+        }
         return editorialRepositorio.save(editorial);
     }
     
     @Override
     public Editorial updateEditorial(Editorial editorial) {
-        
-        return null;
+        long id = editorial.getId_editorial();
+        if (!editorialRepositorio.existsById(id)) {
+            return null;
+        }
+        editorialRepositorio.findById(id).get().setNombre_editorial(editorial.getNombre_editorial());
+        return editorial;
     }
-
+    
     @Override
     public Editorial patchEditorial(Editorial editorial) {
+        long id = editorial.getId_editorial();
+        if (!editorialRepositorio.existsById(id)) {
+            return null;
+        }
+        Editorial patch = editorialRepositorio.findById(id).get();
+        if (editorial.getNombre_editorial() !=null) {
+            patch.setNombre_editorial(editorial.getNombre_editorial());
+        }
         
-        return null;
+        return editorial;
     }
 
     @Override
@@ -76,4 +89,17 @@ public class EditorialServiceImpl implements EditorialService {
         return false;
     }
     
+    /**
+     * Metodo para convertir una editorial en una editorialDTO, para evitar la recursividad
+     * @param ed Editorial
+     * @return EditorialResponse (con el nombre de la editorial en null)
+     */
+    public static EditorialResponse convertirEditorial(Editorial ed) {
+        return new EditorialResponse(ed.getId_editorial()
+                                    ,ed.getNombre_editorial()
+                                    ,ed.getLista_Libros().stream()
+                                                        .map(LibroResponse::toBookResponse)
+                                                        .toList());
+    }
+
 }

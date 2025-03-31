@@ -10,7 +10,7 @@ public interface LibroService {
     public List<LibroResponse> getLibros();
     public LibroResponse getLibroById(int id);
     public Libro saveLibro(LibroRequest libro);
-    public Libro updateLibro(LibroRequest libro);
-    public Libro patchLibro(LibroRequest libro);
+    public Libro updateLibro(int id, LibroRequest libro);
+    public Libro patchLibro(int id, LibroRequest libro);
     public boolean deleteLibro(int id);
 }

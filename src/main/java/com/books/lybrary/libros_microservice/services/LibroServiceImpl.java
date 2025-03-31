@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
-import com.books.lybrary.libros_microservice.model.Editorial;
 import com.books.lybrary.libros_microservice.model.Libro;
 import com.books.lybrary.libros_microservice.repository.LibroRepositorio;
 
-import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
 
 @Service
 public class LibroServiceImpl implements LibroService{
@@ -69,24 +67,30 @@ public class LibroServiceImpl implements LibroService{
     }
     
     @Override
-    public Libro updateLibro(LibroRequest libro) {
-        if (!libro_acces.findById(libro.codigo_libro()).isPresent()) {
+    public Libro updateLibro(int id, LibroRequest libro) {
+        var a = libro_acces.findById(id);
+        if (!a.isPresent()) {
             return null;
         }
 
-        Libro pre = libro_acces.findById(libro.codigo_libro()).get();
-        pre.setTitulo_libro(libro.nombre_libro());
-        pre.setIsbn_libro(libro.isb());
-        pre.setFecha_publicacion_libro(libro.fecha());
-        editorialService.saveEditorial(libro.editorial());
-        pre.setEditorial_id(libro.editorial());
+        Libro pre = a.get();
+        try {            
+            pre.setTitulo_libro(libro.nombre_libro());
+            pre.setIsbn_libro(libro.isb());
+            pre.setFecha_publicacion_libro(libro.fecha());
+            editorialService.saveEditorial(libro.editorial()); 
+            pre.setEditorial_id(libro.editorial());
+        } catch (Exception e) {
+            System.out.println(e + "\n No se insertaron todos los campos\n");
+            return null;
+        }
         
         return libro_acces.save(pre);//Lo guardamos
     }
 
     @Override
-    public Libro patchLibro(LibroRequest libro) {
-        var a = libro_acces.findById(libro.codigo_libro());
+    public Libro patchLibro(int id, LibroRequest libro) {
+        var a = libro_acces.findById(id);
         //Si no existe el libro 
         if (a.isEmpty()) {
             return null;
@@ -95,13 +99,13 @@ public class LibroServiceImpl implements LibroService{
         Libro pre = a.get();
 
         //Busca los campos que se quieren modificar
-        if (!libro.nombre_libro().isEmpty())  {
+        if (libro.nombre_libro()!=null)  {
             pre.setTitulo_libro(libro.nombre_libro());
         }
-        if (!(libro.isb() == 0)) {
+        if (libro.isb() != 0) {
             pre.setIsbn_libro(libro.isb());
         }
-        if (!libro.fecha().toString().isEmpty()) {
+        if (libro.fecha()!=null) {
             pre.setFecha_publicacion_libro(libro.fecha());
         }            
         if (libro.editorial() != null) {

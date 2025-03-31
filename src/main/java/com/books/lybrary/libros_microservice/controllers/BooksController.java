@@ -53,20 +53,20 @@ public class BooksController {
         URI url = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                 buildAndExpand(libro.codigo_libro()).
                 toUri();
-
+ 
         return ResponseEntity.created(url).build();
     }
 
     @PutMapping("modificar/{id}")
     public ResponseEntity<Libro> putLibro(@PathVariable int id, @RequestBody LibroRequest entity) {
         System.out.println("Se cambia todo");
-        return libroservice.updateLibro(entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
+        return libroservice.updateLibro(id,entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
     }
 
     @PatchMapping("modificar/{id}")
     public ResponseEntity<Libro> patchLibro(@PathVariable int id, @RequestBody LibroRequest entity) {
         System.out.println("Se cambia algo");
-        return libroservice.patchLibro(entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
+        return libroservice.patchLibro(id, entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
     }
     
     @DeleteMapping("{id}")
