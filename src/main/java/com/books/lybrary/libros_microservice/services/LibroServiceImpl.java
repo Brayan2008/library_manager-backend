@@ -4,21 +4,21 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Libro;
+import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
 import com.books.lybrary.libros_microservice.repository.LibroRepositorio;
 
 
 @Service
 public class LibroServiceImpl implements LibroService{
-    
+
     @Autowired
     private LibroRepositorio libro_acces;
     
     @Autowired 
-    private EditorialService editorialService;
+    private EditorialRepositorio editorialrepo;
 
     @Override
     public List<LibroResponse> getLibros() {
@@ -49,21 +49,36 @@ public class LibroServiceImpl implements LibroService{
     }
     
     @Override
-    public Libro saveLibro(LibroRequest libro) {     
+    public Libro saveLibro(LibroRequest libro) {
         if (libro_acces.findById(libro.codigo_libro()).isPresent()) {
             return null;
         }
-        
+        if (libro.codigo_libro()==0||libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) {
+            return null;                
+        }
         Libro pre = new Libro();
         pre.setId_libro(libro.codigo_libro());
         pre.setTitulo_libro(libro.nombre_libro());
         pre.setIsbn_libro(libro.isb());
         pre.setFecha_publicacion_libro(libro.fecha());
-        editorialService.saveEditorial(libro.editorial());
-        pre.setEditorial_id(libro.editorial());
+
+        /* En caso la editorial sea nula o no aparezca */
+        if (libro.editorial() == 0) {
+            pre.setEditorial_id(null);
+            return libro_acces.save(pre);
+        }
+        /* En caso si haya en el request, se busca y en caso de no hallarse tambien se pone null */
+        if(editorialrepo.existsById(libro.editorial())){
+            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
+        } else {
+            if (libro.editorial()==0) {
+                pre.setEditorial_id(null);
+                return libro_acces.save(pre);
+            }
+            return null; //Error la editorial no existe
+        };
         
         return libro_acces.save(pre);//Lo guardamos
-    
     }
     
     @Override
@@ -74,17 +89,25 @@ public class LibroServiceImpl implements LibroService{
         }
 
         Libro pre = a.get();
-        try {            
+            //El metodo Put debe tener todos los campos a excepcion de {Editorial}, pues se actualiza (esto es mas por seguridad, pues todos tienen que tener un valor asignado)
+            if (libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) {
+                return null;                
+            }    
+
             pre.setTitulo_libro(libro.nombre_libro());
             pre.setIsbn_libro(libro.isb());
             pre.setFecha_publicacion_libro(libro.fecha());
-            editorialService.saveEditorial(libro.editorial()); 
-            pre.setEditorial_id(libro.editorial());
-        } catch (Exception e) {
-            System.out.println(e + "\n No se insertaron todos los campos\n");
-            return null;
-        }
-        
+            //Aqui asignamos la editorial con la que se relacionará, en caso de encontrarla
+            if(editorialrepo.existsById(libro.editorial())){
+                pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
+            } else {
+                if (libro.editorial() == 0) {
+                    pre.setEditorial_id(null);
+                    return libro_acces.save(pre);
+                }
+                return null; //Error la editorial no existe
+            };
+
         return libro_acces.save(pre);//Lo guardamos
     }
 
@@ -107,9 +130,16 @@ public class LibroServiceImpl implements LibroService{
         }
         if (libro.fecha()!=null) {
             pre.setFecha_publicacion_libro(libro.fecha());
-        }            
-        if (libro.editorial() != null) {
-            pre.setEditorial_id(libro.editorial());
+        }
+        //Buscamos que editorial exista y que no sea 0 -> (campo vacio)            
+        if (libro.editorial() != 0 && editorialrepo.existsById(libro.editorial())) {
+            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
+        } else{
+            if (libro.editorial() == 0) {
+                pre.setEditorial_id(null);
+                return libro_acces.save(pre);
+            }
+            return null; //La editorial no existe
         }
 
         return libro_acces.save(pre);//Lo guardamos

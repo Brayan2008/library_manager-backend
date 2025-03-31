@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.books.lybrary.libros_microservice.dto.EditorialRequest;
 import com.books.lybrary.libros_microservice.dto.EditorialResponse;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Editorial;
@@ -40,44 +41,40 @@ public class EditorialServiceImpl implements EditorialService {
         return !editorialRepositorio.existsById(id) ? null:editorialRepositorio.findById(id).get()
                                                 .getLista_Libros()
                                                 .stream()
-                                                .map(lib->new LibroResponse(lib.getTitulo_libro(), 
-                                                                            lib.getId_libro(), 
-                                                                            lib.getIsbn_libro(), 
-                                                                            lib.getFecha_publicacion_libro(), 
-                                                                            lib.getEditorial_id().getNombre_editorial())).toList();
+                                                .map(LibroResponse::toBookResponse)
+                                                .toList();
     }
 
     
     @Override
-    public Editorial saveEditorial(Editorial editorial) {
-        if (editorialRepositorio.existsById(editorial.getId_editorial())) {
+    public Editorial saveEditorial(EditorialRequest editorial) {
+        if (editorialRepositorio.existsById(editorial.id())) {
             return null;
-        }
-        return editorialRepositorio.save(editorial);
+        }      
+        Editorial pre = new Editorial();
+        pre.setId_editorial(editorial.id());
+        pre.setNombre_editorial(editorial.nombre_editorial());
+        return editorialRepositorio.save(pre);
     }
     
     @Override
-    public Editorial updateEditorial(Editorial editorial) {
-        long id = editorial.getId_editorial();
-        if (!editorialRepositorio.existsById(id)) {
+    public Editorial updateEditorial(EditorialRequest editorial) {
+        if (editorial.nombre_editorial() == null) {
             return null;
         }
-        editorialRepositorio.findById(id).get().setNombre_editorial(editorial.getNombre_editorial());
-        return editorial;
+        Editorial pre = new Editorial();
+        pre.setNombre_editorial(editorial.nombre_editorial());
+        return editorialRepositorio.save(pre);
     }
     
     @Override
-    public Editorial patchEditorial(Editorial editorial) {
-        long id = editorial.getId_editorial();
-        if (!editorialRepositorio.existsById(id)) {
-            return null;
+    public Editorial patchEditorial(EditorialRequest editorial) {
+        Editorial patch = editorialRepositorio.findById(editorial.id()).get();
+        if (editorial.nombre_editorial() !=null) {
+            patch.setNombre_editorial(editorial.nombre_editorial());
+            return editorialRepositorio.save(patch);
         }
-        Editorial patch = editorialRepositorio.findById(id).get();
-        if (editorial.getNombre_editorial() !=null) {
-            patch.setNombre_editorial(editorial.getNombre_editorial());
-        }
-        
-        return editorial;
+        return null;
     }
 
     @Override
