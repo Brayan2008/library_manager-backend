@@ -33,8 +33,6 @@ public class EditorialServiceImpl implements EditorialService {
 
     }
 
-    
-    
     @Deprecated 
     @Override
     public List<LibroResponse> getLibros(long id) {

@@ -3,7 +3,7 @@ package com.books.lybrary.libros_microservice.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,7 +22,7 @@ public class Editorial {
     @Column(name = "NOMBRE_EDITORIAL")
     private String nombre_editorial;
 
-    @OneToMany(mappedBy = "editorial_id")    
+    @OneToMany(mappedBy = "editorial_id", cascade = CascadeType.REMOVE)    
     private List<Libro> lista_Libros = new ArrayList<>();
 }
     
