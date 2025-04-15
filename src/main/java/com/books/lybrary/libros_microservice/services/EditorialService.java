@@ -15,5 +15,4 @@ public interface EditorialService {
     public Editorial updateEditorial(EditorialRequest editorial);
     public Editorial patchEditorial(EditorialRequest editorial);
     public boolean deleteEditorial(long id);
-
 }

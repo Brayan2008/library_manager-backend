@@ -30,7 +30,7 @@ public class Libro {
     @Column(name = "FECHA_PUBLICACION_LIBRO")
     private LocalDate fecha_publicacion_libro;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_EDITORIAL_FK")
     private Editorial editorial_id;
     

@@ -20,7 +20,7 @@ public class Nation {
     @Column(name = "NAME_NATION")
     String name_nation;
     
-    @OneToMany(mappedBy = "nation") 
+    @OneToMany(mappedBy = "nation_id") 
     List<Autor> lista_autores = new ArrayList<>();
 
 }   

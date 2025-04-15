@@ -26,7 +26,7 @@ public class Autor {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_NATION_FK")
-    private Nation nation; //Como foraneo
+    private Nation nation_id; //Como foraneo
 
     @ManyToMany(mappedBy = "lista_autores")
     private List<Libro> lista_libros_autor = new ArrayList<>();
