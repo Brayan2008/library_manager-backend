@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,7 +31,7 @@ public class Libro {
     @Column(name = "FECHA_PUBLICACION_LIBRO")
     private LocalDate fecha_publicacion_libro;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "ID_EDITORIAL_FK")
     private Editorial editorial_id;
     
@@ -38,12 +39,12 @@ public class Libro {
     @JoinTable(name = "AUTORxLIBRO",
             joinColumns = @JoinColumn(name = "ID_LIBRO_FK"),
             inverseJoinColumns = @JoinColumn(name = "COD_AUTOR_FK"))
-    private List<Autor> lista_autores = new ArrayList<>();
+    private final List<Autor> lista_autores = new ArrayList<>();
     
     @ManyToMany
     @JoinTable(name = "TEMAxLIBRO", 
             joinColumns = @JoinColumn(name = "ID_LIBRO_FK"), 
             inverseJoinColumns = @JoinColumn(name ="ID_TEMA_FX"))
-    private List<Tema> lista_tema = new ArrayList<>();
+    private final List<Tema> lista_tema = new ArrayList<>();
 
 }

@@ -22,5 +22,4 @@ public class Nation {
     
     @OneToMany(mappedBy = "nation_id") 
     List<Autor> lista_autores = new ArrayList<>();
-
 }   

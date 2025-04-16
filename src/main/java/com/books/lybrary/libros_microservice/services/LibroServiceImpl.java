@@ -9,6 +9,7 @@ import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Libro;
 import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
 import com.books.lybrary.libros_microservice.repository.LibroRepositorio;
+import com.books.lybrary.libros_microservice.services.interfaces.LibroService;
 
 
 @Service
@@ -71,10 +72,6 @@ public class LibroServiceImpl implements LibroService{
         if(editorialrepo.existsById(libro.editorial())){
             pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
         } else {
-            if (libro.editorial()==0) {
-                pre.setEditorial_id(null);
-                return libro_acces.save(pre);
-            }
             return null; //Error la editorial no existe
         };
         
@@ -90,9 +87,7 @@ public class LibroServiceImpl implements LibroService{
 
         Libro pre = a.get();
             //El metodo Put debe tener todos los campos a excepcion de {Editorial}, pues se actualiza (esto es mas por seguridad, pues todos tienen que tener un valor asignado)
-            if (libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) {
-                return null;                
-            }    
+            if (libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) return null;                  
 
             pre.setTitulo_libro(libro.nombre_libro());
             pre.setIsbn_libro(libro.isb());

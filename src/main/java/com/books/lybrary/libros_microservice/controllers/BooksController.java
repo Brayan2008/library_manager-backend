@@ -7,7 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Libro;
-import com.books.lybrary.libros_microservice.services.LibroService;
+import com.books.lybrary.libros_microservice.services.interfaces.LibroService;
 
 import java.net.URI;
 import java.util.List;
@@ -45,11 +45,8 @@ public class BooksController {
 
     @PostMapping
     public ResponseEntity<LibroResponse> postLibro(@RequestBody LibroRequest libro){         
-        if (libroservice.saveLibro(libro)==null) {
-            System.out.println("No hay nada");
-            return ResponseEntity.badRequest().build();
-        }
-
+        if (libroservice.saveLibro(libro)==null) return ResponseEntity.badRequest().build(); 
+        
         URI url = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                 buildAndExpand(libro.codigo_libro()).
                 toUri();
@@ -59,13 +56,11 @@ public class BooksController {
 
     @PutMapping("modificar/{id}")
     public ResponseEntity<Libro> putLibro(@PathVariable int id, @RequestBody LibroRequest entity) {
-        System.out.println("Se cambia todo");
         return libroservice.updateLibro(id,entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
     }
 
     @PatchMapping("modificar/{id}")
     public ResponseEntity<Libro> patchLibro(@PathVariable int id, @RequestBody LibroRequest entity) {
-        System.out.println("Se cambia algo");
         return libroservice.patchLibro(id, entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
     }
     

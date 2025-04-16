@@ -25,6 +25,4 @@ public class Tema {
     @ManyToMany(mappedBy = "lista_tema")
     List<Libro> lista_libros = new ArrayList<>();
 
-
-
 }

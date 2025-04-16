@@ -10,6 +10,7 @@ import com.books.lybrary.libros_microservice.dto.EditorialResponse;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Editorial;
 import com.books.lybrary.libros_microservice.repository.EditorialRepositorio;
+import com.books.lybrary.libros_microservice.services.interfaces.EditorialService;
 
 @Service
 public class EditorialServiceImpl implements EditorialService {
@@ -33,8 +34,6 @@ public class EditorialServiceImpl implements EditorialService {
 
     }
 
-    
-    
     @Deprecated 
     @Override
     public List<LibroResponse> getLibros(long id) {
@@ -48,7 +47,7 @@ public class EditorialServiceImpl implements EditorialService {
     
     @Override
     public Editorial saveEditorial(EditorialRequest editorial) {
-        if (editorialRepositorio.existsById(editorial.id())) {
+        if (editorialRepositorio.existsById(editorial.id()) || editorial.id()==0) {
             return null;
         }      
         Editorial pre = new Editorial();
@@ -58,18 +57,19 @@ public class EditorialServiceImpl implements EditorialService {
     }
     
     @Override
-    public Editorial updateEditorial(EditorialRequest editorial) {
-        if (editorial.nombre_editorial() == null) {
-            return null;
-        }
-        Editorial pre = new Editorial();
+    public Editorial updateEditorial(long id,EditorialRequest editorial) {
+        if (editorial.nombre_editorial() == null || id == 0) return null;
+      
+        Editorial pre  = editorialRepositorio.findById(id).get();
         pre.setNombre_editorial(editorial.nombre_editorial());
         return editorialRepositorio.save(pre);
     }
     
     @Override
-    public Editorial patchEditorial(EditorialRequest editorial) {
-        Editorial patch = editorialRepositorio.findById(editorial.id()).get();
+    public Editorial patchEditorial(long id, EditorialRequest editorial) {
+        if (!editorialRepositorio.existsById(id)) return null;
+        
+        var patch = editorialRepositorio.findById(id).get();
         if (editorial.nombre_editorial() !=null) {
             patch.setNombre_editorial(editorial.nombre_editorial());
             return editorialRepositorio.save(patch);
@@ -79,11 +79,10 @@ public class EditorialServiceImpl implements EditorialService {
 
     @Override
     public boolean deleteEditorial(long id) {
-        if (editorialRepositorio.existsById(id)) {
-            editorialRepositorio.deleteById(id);
-            return true;
-        }
-        return false;
+        if (!editorialRepositorio.existsById(id)) return false;
+       
+        editorialRepositorio.deleteById(id);
+        return true;
     }
     
     /**
