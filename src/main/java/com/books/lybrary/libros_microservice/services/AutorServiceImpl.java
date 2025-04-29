@@ -55,7 +55,7 @@ public class AutorServiceImpl implements AutorService{
         if (!autorRepositorio.existsById(id) || autor.nombre_autor() == null) {
             return null;
         }
-        Autor pre = new Autor();
+        Autor pre = autorRepositorio.findById(id).get();
         pre.setNombre_autor(autor.nombre_autor());
         if (nationRepositorio.existsById(autor.id_nation())) {
             pre.setNation_id(nationRepositorio.findById(autor.id_nation()).get());

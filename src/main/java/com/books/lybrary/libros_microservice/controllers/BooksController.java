@@ -2,6 +2,7 @@ package com.books.lybrary.libros_microservice.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.books.lybrary.libros_microservice.dto.LibroRequest;
@@ -10,6 +11,7 @@ import com.books.lybrary.libros_microservice.model.Libro;
 import com.books.lybrary.libros_microservice.services.interfaces.LibroService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +46,17 @@ public class BooksController {
     }
 
     @PostMapping
-    public ResponseEntity<LibroResponse> postLibro(@RequestBody LibroRequest libro){         
-        if (libroservice.saveLibro(libro)==null) return ResponseEntity.badRequest().build(); 
-        
+    public ResponseEntity<LibroResponse> postLibro(@RequestParam String nombre_libro, 
+                                                   @RequestParam int codigo_libro,
+                                                   @RequestParam long isb,
+                                                   @RequestParam LocalDate fecha,
+                                                   @RequestParam long editorial,
+                                                   @RequestParam MultipartFile file) {  
+
+        LibroRequest libro = new LibroRequest(nombre_libro, codigo_libro, isb, fecha, editorial);        
+
+        if (libroservice.saveLibro(libro,file)==null) return ResponseEntity.badRequest().build();   
+
         URI url = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                 buildAndExpand(libro.codigo_libro()).
                 toUri();
@@ -69,7 +79,7 @@ public class BooksController {
         return libroservice.deleteLibro(id) ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();    
     }
     
-    
+
     
 } 
     

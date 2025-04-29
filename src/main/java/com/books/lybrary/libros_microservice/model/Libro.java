@@ -26,6 +26,8 @@ public class Libro {
     private int id_libro;
     @Column(name = "TITULO_LIBRO")
     private String titulo_libro;
+    @Column(name = "DIRECCION_IMAGEN_LIBRO")
+    private String imagen_path;
     @Column(name = "ISBN_LIBRO")
     private long isbn_libro;
     @Column(name = "FECHA_PUBLICACION_LIBRO")
@@ -46,5 +48,4 @@ public class Libro {
             joinColumns = @JoinColumn(name = "ID_LIBRO_FK"), 
             inverseJoinColumns = @JoinColumn(name ="ID_TEMA_FX"))
     private final List<Tema> lista_tema = new ArrayList<>();
-
 }

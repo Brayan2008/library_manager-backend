@@ -63,7 +63,7 @@ public class AutorController {
         return autorService.patchAutor(id, autor) == null ? ResponseEntity.badRequest().build():ResponseEntity.noContent().build();
     }
     
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAutor(@PathVariable int id) {
         return autorService.deleteAutor(id) ? ResponseEntity.notFound().build():ResponseEntity.noContent().build();
     }

@@ -1,9 +1,17 @@
 package com.books.lybrary.libros_microservice.services;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.books.lybrary.libros_microservice.dto.LibroRequest;
 import com.books.lybrary.libros_microservice.dto.LibroResponse;
 import com.books.lybrary.libros_microservice.model.Libro;
@@ -27,11 +35,7 @@ public class LibroServiceImpl implements LibroService{
 
         return libro_acces.findAll()
                 .stream()
-                .map(libro->new LibroResponse(libro.getTitulo_libro(),
-                        libro.getId_libro(),
-                        libro.getIsbn_libro(), 
-                        libro.getFecha_publicacion_libro(),
-                        (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null)) //Si la editorial (id) es nula, se asigna null
+                .map(LibroResponse::convertToLibroResponse) //Si la editorial (id) es nula, se asigna null
                 .toList();
     }
 
@@ -43,37 +47,49 @@ public class LibroServiceImpl implements LibroService{
         }
         var libro = libro_pre.get();
         return new LibroResponse(libro.getTitulo_libro(),
-                    libro.getId_libro(), 
-                    libro.getIsbn_libro(),
-                    libro.getFecha_publicacion_libro(),
-                    (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null);
+        libro.getId_libro(), 
+        libro.getIsbn_libro(),
+        libro.getFecha_publicacion_libro(),
+        (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null,
+        libro.getImagen_path());
     }
-    
+
     @Override
-    public Libro saveLibro(LibroRequest libro) {
-        if (libro_acces.findById(libro.codigo_libro()).isPresent()) {
-            return null;
-        }
-        if (libro.codigo_libro()==0||libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) {
-            return null;                
-        }
+    public Libro saveLibro(LibroRequest libro, MultipartFile file) {
+        if (libro_acces.findById(libro.codigo_libro()).isPresent()) return null;
+        if (libro.codigo_libro()==0||libro.nombre_libro()==null||libro.fecha()==null||libro.isb()==0) return null;                
+
         Libro pre = new Libro();
         pre.setId_libro(libro.codigo_libro());
         pre.setTitulo_libro(libro.nombre_libro());
         pre.setIsbn_libro(libro.isb());
         pre.setFecha_publicacion_libro(libro.fecha());
+        
+        /* En caso si haya en el request, se busca y en caso de no hallarse tambien se pone null */
+        if(editorialrepo.existsById(libro.editorial())){
+            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
+        } else {
+            return null; //Error la editorial no existe
+        }
+
+        //Buscamos la carpeta y le asignamos un nombre al archivo
+        Path path = Paths.get("images");
+        String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path filePath = path.resolve(filename); //Esta sera la ruta final
+
+        try {
+            Files.copy(file.getInputStream(), filePath);
+            pre.setImagen_path(filename);
+            Logger.getLogger(this.getClass().getName()).info("Se subio la imagen");
+        } catch (IllegalStateException | IOException e) {
+            Logger.getLogger(this.getClass().getName()).severe("Error al guardar la imagen");
+        }
 
         /* En caso la editorial sea nula o no aparezca */
         if (libro.editorial() == 0) {
             pre.setEditorial_id(null);
             return libro_acces.save(pre);
         }
-        /* En caso si haya en el request, se busca y en caso de no hallarse tambien se pone null */
-        if(editorialrepo.existsById(libro.editorial())){
-            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
-        } else {
-            return null; //Error la editorial no existe
-        };
         
         return libro_acces.save(pre);//Lo guardamos
     }
@@ -92,6 +108,7 @@ public class LibroServiceImpl implements LibroService{
             pre.setTitulo_libro(libro.nombre_libro());
             pre.setIsbn_libro(libro.isb());
             pre.setFecha_publicacion_libro(libro.fecha());
+
             //Aqui asignamos la editorial con la que se relacionará, en caso de encontrarla
             if(editorialrepo.existsById(libro.editorial())){
                 pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
@@ -117,15 +134,11 @@ public class LibroServiceImpl implements LibroService{
         Libro pre = a.get();
 
         //Busca los campos que se quieren modificar
-        if (libro.nombre_libro()!=null)  {
-            pre.setTitulo_libro(libro.nombre_libro());
-        }
-        if (libro.isb() != 0) {
-            pre.setIsbn_libro(libro.isb());
-        }
-        if (libro.fecha()!=null) {
-            pre.setFecha_publicacion_libro(libro.fecha());
-        }
+        
+        if (libro.nombre_libro()!=null) pre.setTitulo_libro(libro.nombre_libro());
+        if (libro.isb() != 0)    pre.setIsbn_libro(libro.isb());
+        if (libro.fecha()!=null) pre.setFecha_publicacion_libro(libro.fecha());
+
         //Buscamos que editorial exista y que no sea 0 -> (campo vacio)            
         if (libro.editorial() != 0 && editorialrepo.existsById(libro.editorial())) {
             pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());

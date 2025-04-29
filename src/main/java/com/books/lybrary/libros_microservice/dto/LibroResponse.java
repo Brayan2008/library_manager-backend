@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import com.books.lybrary.libros_microservice.model.Libro;
 
-public record LibroResponse(String nombre_libro, int codigo_libro, long isb, LocalDate fecha, String nombre_editorial) {
+public record LibroResponse(String nombre_libro, int codigo_libro, long isb, LocalDate fecha, String nombre_editorial, String image_path) {
 
     /** Por ahora solo lo utiliza para generar la lista de libros en Editorial */
     public static LibroResponse toBookResponse(Libro lib) {
@@ -12,7 +12,8 @@ public record LibroResponse(String nombre_libro, int codigo_libro, long isb, Loc
                                 lib.getId_libro(), 
                                 lib.getIsbn_libro(), 
                                 lib.getFecha_publicacion_libro(), 
-                                null); 
+                                null,
+                                lib.getImagen_path()); 
     }
     
     /**
@@ -27,6 +28,7 @@ public record LibroResponse(String nombre_libro, int codigo_libro, long isb, Loc
                                 libro.getId_libro(), 
                                 libro.getIsbn_libro(), 
                                 libro.getFecha_publicacion_libro(),
-                                (libro.getEditorial_id()!=null) ? libro.getEditorial_id().getNombre_editorial():null);
+                                (libro.getEditorial_id()!=null) ? libro.getEditorial_id().getNombre_editorial():null,
+                                libro.getImagen_path());
     }
 }
