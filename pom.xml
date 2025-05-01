@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.books.lybrary</groupId>
 	<artifactId>libros_microservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>libros_microservice</name>
-	<description>Demo project for Spring Boot</description>
+	<version>SNAPSHOT 0.0.5</version>
+	<name>Microservicio - Libros</name>
+	<description>Proyecto orientado al servicio de prestamos de libros de un sistema de biblioteca</description>
 	<url/>
 	<licenses>
 		<license/>

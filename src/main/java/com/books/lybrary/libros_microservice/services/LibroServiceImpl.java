@@ -42,16 +42,20 @@ public class LibroServiceImpl implements LibroService{
     @Override
     public LibroResponse getLibroById(int id) {
         var libro_pre = libro_acces.findById(id);
-        if (libro_pre.isEmpty()) {
-            return null;
-        }
+        if (libro_pre.isEmpty()) return null;
+       
         var libro = libro_pre.get();
         return new LibroResponse(libro.getTitulo_libro(),
-        libro.getId_libro(), 
-        libro.getIsbn_libro(),
-        libro.getFecha_publicacion_libro(),
-        (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null,
-        libro.getImagen_path());
+                                 libro.getId_libro(), 
+                                 libro.getIsbn_libro(),
+                                 libro.getFecha_publicacion_libro(),
+                                 (libro.getEditorial_id()!=null)?libro.getEditorial_id().getNombre_editorial():null,
+                                 libro.getImagen_path());
+    }
+
+    @Override
+    public Libro getLibroComplete(int id){
+        return !libro_acces.existsById(id) ? null:libro_acces.findById(id).get();
     }
 
     @Override
@@ -64,42 +68,23 @@ public class LibroServiceImpl implements LibroService{
         pre.setTitulo_libro(libro.nombre_libro());
         pre.setIsbn_libro(libro.isb());
         pre.setFecha_publicacion_libro(libro.fecha());
-        
-        /* En caso si haya en el request, se busca y en caso de no hallarse tambien se pone null */
-        if(editorialrepo.existsById(libro.editorial())){
-            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
-        } else {
-            return null; //Error la editorial no existe
-        }
-
-        //Buscamos la carpeta y le asignamos un nombre al archivo
-        Path path = Paths.get("images");
-        String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path filePath = path.resolve(filename); //Esta sera la ruta final
-
-        try {
-            Files.copy(file.getInputStream(), filePath);
-            pre.setImagen_path(filename);
-            Logger.getLogger(this.getClass().getName()).info("Se subio la imagen");
-        } catch (IllegalStateException | IOException e) {
-            Logger.getLogger(this.getClass().getName()).severe("Error al guardar la imagen");
-        }
 
         /* En caso la editorial sea nula o no aparezca */
         if (libro.editorial() == 0) {
             pre.setEditorial_id(null);
-            return libro_acces.save(pre);
+        } else if(editorialrepo.existsById(libro.editorial())){ //Buscamos la editorial, en caso de no encontrarla, dara un error
+            pre.setEditorial_id(editorialrepo.findById(libro.editorial()).get());
+        } else {
+            return null; //Error la editorial no existe
         }
         
-        return libro_acces.save(pre);//Lo guardamos
+        return agregarImagen(file, pre);//Lo guardamos
     }
     
     @Override
     public Libro updateLibro(int id, LibroRequest libro) {
         var a = libro_acces.findById(id);
-        if (!a.isPresent()) {
-            return null;
-        }
+        if (!a.isPresent()) return null;
 
         Libro pre = a.get();
             //El metodo Put debe tener todos los campos a excepcion de {Editorial}, pues se actualiza (esto es mas por seguridad, pues todos tienen que tener un valor asignado)
@@ -124,20 +109,18 @@ public class LibroServiceImpl implements LibroService{
     }
 
     @Override
-    public Libro patchLibro(int id, LibroRequest libro) {
+    public Libro patchLibro(int id, LibroRequest libro) { 
         var a = libro_acces.findById(id);
         //Si no existe el libro 
-        if (a.isEmpty()) {
-            return null;
-        }
+        if (a.isEmpty()) return null;
+        
         //Obtiene el libro
         Libro pre = a.get();
 
         //Busca los campos que se quieren modificar
-        
         if (libro.nombre_libro()!=null) pre.setTitulo_libro(libro.nombre_libro());
-        if (libro.isb() != 0)    pre.setIsbn_libro(libro.isb());
-        if (libro.fecha()!=null) pre.setFecha_publicacion_libro(libro.fecha());
+        if (libro.isb() != 0)           pre.setIsbn_libro(libro.isb());
+        if (libro.fecha()!=null)        pre.setFecha_publicacion_libro(libro.fecha());
 
         //Buscamos que editorial exista y que no sea 0 -> (campo vacio)            
         if (libro.editorial() != 0 && editorialrepo.existsById(libro.editorial())) {
@@ -156,11 +139,42 @@ public class LibroServiceImpl implements LibroService{
 
     @Override
     public boolean deleteLibro(int id) {
-        if (libro_acces.findById(id).isEmpty()) {
-            return false;
+        if (libro_acces.findById(id).isEmpty()) return false;
+        Path image_name = Paths.get(libro_acces.findById(id).get().getImagen_path());
+        Path image_path = Paths.get(System.getProperty("user.dir") + "\\images\\").resolve(image_name);
+        try {
+            Files.delete(image_path);
+        } catch (IOException e) {
+            Logger.getLogger(this.getClass().getName()).severe("Error al eliminar la imagen");
         }
+        
         libro_acces.deleteById(id);
         return true;
-    }       
+    }
+    
+    @Override
+    public Libro agregarImagen(MultipartFile file, Libro pre) {
+        //Buscamos la carpeta y le asignamos un nombre al archivo
+        if(!file.isEmpty()){
+            Path carpeta_destino = Paths.get(System.getProperty("user.dir") + "/images/");
+            String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path filePath =  carpeta_destino.resolve(filename);   //Esta sera la ruta final
+            
+            try{
+                Files.copy(file.getInputStream(), filePath);
+                pre.setImagen_path(filename);
+                Logger.getLogger(this.getClass().getName()).info("Se subio la imagen");
+            } catch (IllegalStateException | IOException e) {
+                Logger.getLogger(this.getClass().getName()).severe("Error al guardar la imagen");
+            }
+        } else {
+            try{
+                pre.setImagen_path("images\\default.png");
+            } catch (IllegalStateException e) {
+                Logger.getLogger(this.getClass().getName()).severe("Error al poner la imagen por defecto");
+            }
+        }
+        return libro_acces.save(pre);        
+    }
         
 }

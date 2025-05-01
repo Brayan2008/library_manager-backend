@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
-
-
 @RestController
 @RequestMapping("/books")
 public class BooksController {
@@ -64,6 +61,15 @@ public class BooksController {
         return ResponseEntity.created(url).build();
     }
 
+    @PutMapping("updateImagen/{codigo_libro}")
+    public ResponseEntity<?> actualizarImagen(@PathVariable int codigo_libro, @RequestParam MultipartFile file) {
+        Libro libro = libroservice.getLibroComplete(codigo_libro);
+        if(libro == null) return ResponseEntity.notFound().build();
+        libroservice.agregarImagen(file, libro);
+        return ResponseEntity.noContent().build();
+    }
+
+
     @PutMapping("modificar/{id}")
     public ResponseEntity<Libro> putLibro(@PathVariable int id, @RequestBody LibroRequest entity) {
         return libroservice.updateLibro(id,entity)!=null ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();
@@ -79,11 +85,4 @@ public class BooksController {
         return libroservice.deleteLibro(id) ? ResponseEntity.noContent().build():ResponseEntity.badRequest().build();    
     }
     
-
-    
-} 
-    
-    
-
-
-
+}    
